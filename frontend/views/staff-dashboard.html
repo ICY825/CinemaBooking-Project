@@ -1,0 +1,20 @@
+<h1 class="page-title">Bảng điều khiển nhân viên</h1>
+<p class="muted" ng-if="vm.cinema">Rạp: <strong>{{vm.cinema.name}}</strong> · {{vm.cinema.address}}</p>
+<p class="muted" ng-if="!vm.user.cinema_id">Tài khoản chưa được gán rạp.</p>
+
+<div class="grid-3">
+  <a class="card tile" href="#!/soon/pos">
+    <h3>Bán vé tại quầy</h3>
+    <p class="muted">Chọn suất, chọn ghế, thu tiền mặt và in vé.</p>
+    <span class="soon-tag">Tuần 6</span>
+  </a>
+  <a class="card tile" href="#!/soon/checkin">
+    <h3>Soát vé QR</h3>
+    <p class="muted">Quét mã QR trên vé, mỗi vé chỉ vào được một lần.</p>
+    <span class="soon-tag">Tuần 6</span>
+  </a>
+  <a class="card tile" href="#!/profile">
+    <h3>Hồ sơ</h3>
+    <p class="muted">Cập nhật thông tin và đổi mật khẩu.</p>
+  </a>
+</div>

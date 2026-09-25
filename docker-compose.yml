@@ -1,0 +1,50 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: cinema
+      POSTGRES_USER: cinema
+      POSTGRES_PASSWORD: cinema
+    ports: ["5432:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cinema -d cinema"]
+      interval: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "1025:1025"   # SMTP
+      - "8025:8025"   # web UI: http://localhost:8025
+
+  api:
+    build: ./backend
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://cinema:cinema@db:5432/cinema
+      REDIS_URL: redis://redis:6379/0
+      SMTP_HOST: mailhog
+      SMTP_PORT: 1025
+    ports: ["8000:8000"]
+    depends_on:
+      db: {condition: service_healthy}
+      redis: {condition: service_started}
+      mailhog: {condition: service_started}
+
+  web:
+    image: nginx:alpine
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+      - ./frontend/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    ports: ["8080:80"]
+    depends_on: [api]
+
+  # Added in task 3.4: worker + beat (Celery).
+
+volumes:
+  pgdata:

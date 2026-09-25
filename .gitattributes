@@ -1,0 +1,4 @@
+# Keep LF line endings in the working tree too: files run inside Linux containers.
+* text=auto eol=lf
+*.xlsx binary
+*.png binary

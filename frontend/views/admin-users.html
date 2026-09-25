@@ -1,0 +1,87 @@
+<div class="page-head">
+  <h1 class="page-title">Quản lý tài khoản</h1>
+  <button class="btn btn-primary" ng-click="vm.openCreate()">+ Tạo tài khoản</button>
+</div>
+
+<div class="toolbar card">
+  <input type="search" placeholder="Tìm theo email hoặc họ tên..." ng-model="vm.filters.q"
+         ng-model-options="{debounce: 300}" ng-change="vm.search()" />
+  <select ng-model="vm.filters.role" ng-change="vm.search()">
+    <option value="">Tất cả vai trò</option>
+    <option ng-repeat="r in vm.roles" value="{{r}}">{{vm.roleLabels[r]}}</option>
+  </select>
+</div>
+
+<section class="card">
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr><th>Họ tên</th><th>Email</th><th>Vai trò</th><th>Rạp</th><th>Trạng thái</th><th></th></tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="u in vm.data.items">
+          <td>{{u.full_name}} <small class="muted" ng-if="vm.isSelf(u)">(bạn)</small></td>
+          <td>{{u.email}}</td>
+          <td><span class="role-badge role-{{u.role}}">{{vm.roleLabels[u.role]}}</span></td>
+          <td>{{vm.cinemaName(u.cinema_id)}}</td>
+          <td><span class="status" ng-class="u.is_active ? 'status-done' : 'status-locked'">{{u.is_active ? 'Hoạt động' : 'Đã khoá'}}</span></td>
+          <td class="right"><button class="btn btn-ghost btn-sm" ng-click="vm.openEdit(u)">Sửa</button></td>
+        </tr>
+        <tr ng-if="vm.data && !vm.data.items.length"><td colspan="6" class="muted center">Không có tài khoản phù hợp.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pager" ng-if="vm.data">
+    <span class="muted">Tổng {{vm.data.total}} tài khoản</span>
+    <button class="btn btn-ghost btn-sm" ng-disabled="vm.filters.page <= 1" ng-click="vm.goTo(vm.filters.page - 1)">‹ Trước</button>
+    <span>Trang {{vm.filters.page}} / {{vm.pageCount()}}</span>
+    <button class="btn btn-ghost btn-sm" ng-disabled="vm.filters.page >= vm.pageCount()" ng-click="vm.goTo(vm.filters.page + 1)">Sau ›</button>
+  </div>
+</section>
+
+<div class="modal-backdrop" ng-if="vm.editing" ng-click="vm.close()">
+  <div class="modal card" ng-click="$event.stopPropagation()" role="dialog" aria-modal="true">
+    <h2>{{vm.editing.mode === 'create' ? 'Tạo tài khoản' : 'Sửa tài khoản'}}</h2>
+    <p class="muted" ng-if="vm.editing.mode === 'edit'">{{vm.editing.user.email}}</p>
+
+    <div class="alert alert-error" ng-if="vm.error">{{vm.error}}</div>
+
+    <form name="userForm" ng-submit="userForm.$valid && vm.save()" novalidate>
+      <label ng-if="vm.editing.mode === 'create'">Email
+        <input type="email" ng-model="vm.editing.form.email" required />
+      </label>
+      <label>Họ tên
+        <input type="text" ng-model="vm.editing.form.full_name" required ng-minlength="2" maxlength="120" />
+      </label>
+      <label>Số điện thoại
+        <input type="tel" ng-model="vm.editing.form.phone" ng-pattern="/^\+?\d{9,15}$/" />
+      </label>
+      <label ng-if="vm.editing.mode === 'create'">Mật khẩu
+        <input type="password" ng-model="vm.editing.form.password" required ng-minlength="8" autocomplete="new-password" />
+        <small class="hint">Ít nhất 8 ký tự, gồm cả chữ và số.</small>
+      </label>
+      <label>Vai trò
+        <select ng-model="vm.editing.form.role" ng-disabled="vm.editing.user && vm.isSelf(vm.editing.user)">
+          <option ng-repeat="r in vm.roles" value="{{r}}">{{vm.roleLabels[r]}}</option>
+        </select>
+      </label>
+      <label ng-if="vm.editing.form.role === 'staff'">Rạp làm việc
+        <select ng-model="vm.editing.form.cinema_id" required
+                ng-options="c.id as c.name for c in vm.cinemas">
+          <option value="">-- Chọn rạp --</option>
+        </select>
+      </label>
+      <label class="checkbox" ng-if="vm.editing.mode === 'edit' && !vm.isSelf(vm.editing.user)">
+        <input type="checkbox" ng-model="vm.editing.form.is_active" /> Tài khoản đang hoạt động
+      </label>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" ng-click="vm.close()">Huỷ</button>
+        <button type="submit" class="btn btn-primary" ng-disabled="userForm.$invalid || vm.saving">
+          {{vm.saving ? 'Đang lưu...' : 'Lưu'}}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

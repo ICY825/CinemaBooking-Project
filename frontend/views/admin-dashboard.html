@@ -1,0 +1,27 @@
+<h1 class="page-title">Tổng quan</h1>
+
+<div class="stats">
+  <a class="card stat" href="#!/admin/users" ng-repeat="role in ['customer', 'staff', 'admin']">
+    <span class="stat-label">{{vm.roleLabels[role]}}</span>
+    <span class="stat-value">{{vm.counts[role] === undefined ? '…' : (vm.counts[role] | number)}}</span>
+  </a>
+  <div class="card stat">
+    <span class="stat-label">Rạp</span>
+    <span class="stat-value">{{vm.cinemaCount === undefined ? '…' : vm.cinemaCount}}</span>
+  </div>
+</div>
+
+<section class="card">
+  <h2>Lộ trình phát triển</h2>
+  <table class="table">
+    <thead><tr><th>Tuần</th><th>Thời gian</th><th>Phạm vi</th><th>Trạng thái</th></tr></thead>
+    <tbody>
+      <tr ng-repeat="r in vm.roadmap">
+        <td>{{r.week}}</td>
+        <td class="nowrap">{{r.dates}}</td>
+        <td>{{r.scope}}</td>
+        <td><span class="status" ng-class="r.done ? 'status-done' : 'status-todo'">{{r.done ? 'Xong' : 'Chưa làm'}}</span></td>
+      </tr>
+    </tbody>
+  </table>
+</section>

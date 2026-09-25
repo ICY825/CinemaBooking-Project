@@ -1,0 +1,26 @@
+<section class="hero">
+  <h1>Đặt vé xem phim, chọn ghế trong vài giây</h1>
+  <p>Xem lịch chiếu, chọn ghế yêu thích, thanh toán online và nhận vé QR ngay trên điện thoại.</p>
+  <div class="hero-actions" ng-if="!vm.auth.isLoggedIn()">
+    <a class="btn btn-primary" href="#!/register">Tạo tài khoản</a>
+    <a class="btn btn-ghost" href="#!/login">Đăng nhập</a>
+  </div>
+  <p class="hero-greeting" ng-if="vm.auth.isLoggedIn()">
+    Xin chào <strong>{{vm.auth.user().full_name}}</strong>. Lịch chiếu sẽ mở bán từ tuần 3 (05/10).
+  </p>
+</section>
+
+<div class="grid-3">
+  <div class="card feature">
+    <h3>Chọn ghế trực quan</h3>
+    <p class="muted">Sơ đồ ghế thường, VIP, ghế đôi cập nhật theo thời gian thực.</p>
+  </div>
+  <div class="card feature">
+    <h3>Giữ ghế 10 phút</h3>
+    <p class="muted">Ghế đã chọn được giữ riêng cho bạn trong lúc thanh toán, không ai đặt trùng.</p>
+  </div>
+  <div class="card feature">
+    <h3>Vé QR</h3>
+    <p class="muted">Nhận vé điện tử qua email, quét QR tại cửa phòng chiếu.</p>
+  </div>
+</div>

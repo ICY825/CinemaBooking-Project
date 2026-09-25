@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cinema Booking Demo</title>
+  <style>
+    /* ============================================================
+       BẠN CÓ THỂ TỰ CHỈNH SỬA GIAO DIỆN (CSS) DƯỚI ĐÂY
+       ============================================================ */
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --accent-color: #38bdf8;
+      --seat-available: #475569;
+      --seat-selected: #22c55e;
+      --seat-occupied: #ef4444;
+      --text-color: #f8fafc;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    h1 {
+      margin-bottom: 1.5rem;
+      color: var(--accent-color);
+    }
+
+    .movie-picker {
+      background: var(--card-bg);
+      padding: 0.8rem 1.5rem;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+    }
+
+    select {
+      background: #334155;
+      color: white;
+      border: 1px solid #64748b;
+      padding: 0.4rem 0.8rem;
+      border-radius: 4px;
+      font-size: 1rem;
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* Màn hình chiếu phim */
+    .screen-container {
+      perspective: 800px;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .screen {
+      background: linear-gradient(to bottom, #94a3b8, transparent);
+      height: 60px;
+      width: 280px;
+      transform: rotateX(-30deg) scale(1.1);
+      box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2);
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+    }
+
+    .screen-text {
+      color: #94a3b8;
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+    }
+
+    /* Sơ đồ ghế */
+    .seats-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 10px;
+      margin-bottom: 2rem;
+    }
+
+    .seat {
+      width: 36px;
+      height: 32px;
+      background-color: var(--seat-available);
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.15s ease, background-color 0.15s ease;
+    }
+
+    .seat:hover:not(.occupied) {
+      transform: scale(1.15);
+    }
+
+    .seat.selected {
+      background-color: var(--seat-selected);
+      box-shadow: 0 0 8px var(--seat-selected);
+    }
+
+    .seat.occupied {
+      background-color: var(--seat-occupied);
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    /* Chú thích màu ghế */
+    .legend {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+      margin-bottom: 2rem;
+      background: var(--card-bg);
+      padding: 0.8rem 1.2rem;
+      border-radius: 8px;
+    }
+
+    .legend li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+    }
+
+    .legend .seat {
+      width: 20px;
+      height: 18px;
+      cursor: default;
+    }
+
+    /* Bảng thông tin thanh toán */
+    .summary {
+      background: var(--card-bg);
+      padding: 1.2rem 2rem;
+      border-radius: 8px;
+      text-align: center;
+      line-height: 1.8;
+      min-width: 280px;
+    }
+
+    .summary span {
+      color: var(--accent-color);
+      font-weight: bold;
+    }
+
+    .btn-checkout {
+      margin-top: 1rem;
+      background: var(--accent-color);
+      color: #0f172a;
+      border: none;
+      padding: 0.6rem 1.4rem;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: opacity 0.2s;
+    }
+
+    .btn-checkout:hover {
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎬 Cinema Seat Booking</h1>
+
+  <!-- Chọn phim -->
+  <div class="movie-picker">
+    <label for="movie">Chọn phim: </label>
+    <select id="movie">
+      <!-- BẠN CÓ THỂ THAY ĐỔI / THÊM BỚT PHIM & GIÁ VÉ TẠI ĐÂY -->
+      <option value="90000">Đào, Phở và Piano (90.000đ)</option>
+      <option value="110000">Dune: Part Two (110.000đ)</option>
+      <option value="120000">Kung Fu Panda 4 (120.000đ)</option>
+      <option value="80000">Mai (80.000đ)</option>
+    </select>
+  </div>
+
+  <!-- Chú thích trạng thái ghế -->
+  <ul class="legend">
+    <li><div class="seat"></div> Ghế trống</li>
+    <li><div class="seat selected"></div> Đang chọn</li>
+    <li><div class="seat occupied"></div> Đã đặt trước</li>
+  </ul>
+
+  <!-- Màn chiếu -->
+  <div class="screen-container">
+    <div class="screen"></div>
+    <div class="screen-text">MÀN HÌNH</div>
+  </div>
+
+  <!-- Sơ đồ ghế (24 ghế chia làm 4 hàng x 6 cột) -->
+  <div class="seats-grid" id="seatsGrid"></div>
+
+  <!-- Tóm tắt số ghế và tiền -->
+  <div class="summary">
+    <p>Đã chọn: <span id="count">0</span> ghế</p>
+    <p>Tổng tiền: <span id="total">0</span> đ</p>
+    <button class="btn-checkout" id="btnCheckout">Đặt Vé Ngay</button>
+  </div>
+
+  <!-- ============================================================
+       LOGIC JAVASCRIPT
+       ============================================================ -->
+  <script>
+    // BẠN CÓ THỂ TÙY BIẾN SỐ LƯỢNG GHẾ HOẶC LOGIC DƯỚI ĐÂY
+    const TOTAL_SEATS = 24; // Tổng số ghế
+    const OCCUPIED_SEATS = [2, 3, 11, 12, 19]; // Ghế đã có người mua sẵn (theo index)
+
+    const seatsGrid = document.getElementById('seatsGrid');
+    const movieSelect = document.getElementById('movie');
+    const countSpan = document.getElementById('count');
+    const totalSpan = document.getElementById('total');
+    const btnCheckout = document.getElementById('btnCheckout');
+
+    // 1. Tạo các ô ghế
+    for (let i = 0; i < TOTAL_SEATS; i++) {
+      const seat = document.createElement('div');
+      seat.classList.add('seat');
+      seat.dataset.seatIndex = i + 1;
+
+      // Đánh dấu các ghế đã có người mua
+      if (OCCUPIED_SEATS.includes(i)) {
+        seat.classList.add('occupied');
+      }
+
+      // Xử lý sự kiện click chọn ghế
+      seat.addEventListener('click', () => {
+        if (!seat.classList.contains('occupied')) {
+          seat.classList.toggle('selected');
+          updateTotal();
+        }
+      });
+
+      seatsGrid.appendChild(seat);
+    }
+
+    // 2. Cập nhật số ghế và tổng tiền
+    function updateTotal() {
+      const selectedSeats = document.querySelectorAll('.seats-grid .seat.selected');
+      const ticketPrice = parseInt(movieSelect.value, 10);
+      const count = selectedSeats.length;
+
+      countSpan.textContent = count;
+      totalSpan.textContent = (count * ticketPrice).toLocaleString('vi-VN');
+    }
+
+    // Đổi phim -> cập nhật lại giá tiền
+    movieSelect.addEventListener('change', updateTotal);
+
+    // Bấm nút Đặt vé
+    btnCheckout.addEventListener('click', () => {
+      const count = parseInt(countSpan.textContent, 10);
+      if (count === 0) {
+        alert('Vui lòng chọn ít nhất 1 ghế trước khi đặt vé!');
+      } else {
+        alert(`Chúc mừng! Bạn đã đặt thành công ${count} vé cho phim "${movieSelect.options[movieSelect.selectedIndex].text.split('(')[0].trim()}" với tổng tiền là ${totalSpan.textContent} đ.`);
+      }
+    });
+
+    // Khởi tạo tính toán ban đầu
+    updateTotal();
+  </script>
+</body>
+</html>

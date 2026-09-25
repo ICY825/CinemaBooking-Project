@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="vi" ng-app="cinemaApp" ng-strict-di>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cinema Booking</title>
+  <link rel="stylesheet" href="css/app.css" />
+</head>
+<body ng-controller="ShellCtrl as shell" ng-cloak>
+
+  <header class="topbar">
+    <a class="brand" href="#!/">🎬 Cinema Booking</a>
+    <button class="menu-toggle" ng-if="shell.menu().length" ng-click="shell.sidebarOpen = !shell.sidebarOpen"
+            aria-label="Mở menu">☰</button>
+    <div class="topbar-right" ng-if="shell.auth.isLoggedIn()">
+      <span class="role-badge role-{{shell.auth.user().role}}">{{shell.roleLabels[shell.auth.user().role]}}</span>
+      <a class="user-name" href="#!/profile">{{shell.auth.user().full_name}}</a>
+      <button class="btn btn-ghost btn-sm" ng-click="shell.logout()">Đăng xuất</button>
+    </div>
+    <div class="topbar-right" ng-if="!shell.auth.isLoggedIn()">
+      <a class="btn btn-ghost btn-sm" href="#!/login">Đăng nhập</a>
+      <a class="btn btn-primary btn-sm" href="#!/register">Đăng ký</a>
+    </div>
+  </header>
+
+  <div class="layout" ng-class="{'has-sidebar': shell.menu().length}">
+    <nav class="sidebar" ng-if="shell.menu().length" ng-class="{open: shell.sidebarOpen}">
+      <a ng-repeat="item in shell.menu()" href="#!{{item.path}}"
+         ng-class="{active: shell.isActive(item.path)}" ng-click="shell.sidebarOpen = false">
+        {{item.label}}
+        <small class="soon-tag" ng-if="item.path.indexOf('/soon/') === 0">sắp có</small>
+      </a>
+    </nav>
+    <main class="content" ng-view></main>
+  </div>
+
+  <div class="toasts">
+    <div class="toast toast-{{t.type}}" ng-repeat="t in shell.notify.items" ng-click="shell.notify.remove(t)">
+      {{t.text}}
+    </div>
+  </div>
+
+  <script src="vendor/angular.min.js"></script>
+  <script src="vendor/angular-route.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/services.js"></script>
+  <script src="js/controllers/shell.js"></script>
+  <script src="js/controllers/auth.js"></script>
+  <script src="js/controllers/profile.js"></script>
+  <script src="js/controllers/dashboards.js"></script>
+  <script src="js/controllers/admin-users.js"></script>
+</body>
+</html>

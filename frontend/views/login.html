@@ -1,0 +1,33 @@
+<section class="auth-card">
+  <h1>Đăng nhập</h1>
+  <p class="muted">Đặt vé nhanh, giữ ghế đẹp.</p>
+
+  <div class="alert alert-warning" ng-if="vm.expired">Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại.</div>
+  <div class="alert alert-error" ng-if="vm.error">{{vm.error}}</div>
+
+  <form name="loginForm" ng-submit="loginForm.$valid && vm.submit()" novalidate>
+    <label>Email
+      <input type="email" name="email" ng-model="vm.form.email" required autocomplete="username" autofocus />
+    </label>
+    <label>Mật khẩu
+      <input type="password" name="password" ng-model="vm.form.password" required autocomplete="current-password" />
+    </label>
+    <button class="btn btn-primary btn-block" type="submit" ng-disabled="loginForm.$invalid || vm.loading">
+      {{vm.loading ? 'Đang đăng nhập...' : 'Đăng nhập'}}
+    </button>
+  </form>
+
+  <p class="links">
+    <a href="#!/forgot-password">Quên mật khẩu?</a>
+    <span>Chưa có tài khoản? <a href="#!/register">Đăng ký</a></span>
+  </p>
+
+  <div class="demo-box">
+    <strong>Tài khoản demo</strong> (mật khẩu <code>Cinema@123</code>)
+    <div class="demo-buttons">
+      <button type="button" class="btn btn-ghost btn-sm" ng-repeat="a in vm.demoAccounts" ng-click="vm.useDemo(a)">
+        {{a.label}}
+      </button>
+    </div>
+  </div>
+</section>
